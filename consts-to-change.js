@@ -39,4 +39,4 @@ shouldShowRightIcon={!props.isReadOnly}
 NA
 `;
 
-export { COMMENT_BODY, REPO_NAME, REPO_OWNER, SLACK_URL };
+module.exports = { COMMENT_BODY, REPO_NAME, REPO_OWNER, SLACK_URL };

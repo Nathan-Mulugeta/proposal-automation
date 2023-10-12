@@ -1,11 +1,11 @@
-import axios from "axios";
-import dotenv from "dotenv";
-import {
+const axios = require("axios");
+const dotenv = require("dotenv");
+const {
   COMMENT_BODY,
   REPO_NAME,
   REPO_OWNER,
   SLACK_URL,
-} from "./consts-to-change.js";
+} = require("./consts-to-change.js");
 
 dotenv.config(); // Load environment variables from .env
 
