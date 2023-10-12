@@ -13,8 +13,6 @@ const baseUrl = "https://api.github.com";
 
 const accessToken = process.env.AUTOMATION_PAT;
 
-console.log(process.env.AUTOMATION_PAT);
-
 let commentPosted = false;
 
 console.log(REPO_OWNER, "/", REPO_NAME);
