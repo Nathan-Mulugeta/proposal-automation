@@ -6,14 +6,14 @@ const REPO_OWNER = testing ? "Nathan-Mulugeta" : "Expensify";
 const REPO_NAME = REPO_OWNER === "Expensify" ? "App" : "feedback-app";
 
 const SLACK_URL =
-  "https://expensify.slack.com/archives/C049HHMV9SM/p1697005474290679";
+  "https://expensify.slack.com/archives/C049HHMV9SM/p169700547429067";
 
 // Comment body
 const COMMENT_BODY = `
 ## Proposal
 
 ### Please re-state the problem that we are trying to solve in this issue.
-There is an absence of an arrow icon in both the date and merchant fields.
+This is changed now
 
 ### What is the root cause of that problem?
 The root cause of this problem is here on these two lines:
