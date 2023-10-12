@@ -1,4 +1,5 @@
 import axios from "axios";
+import dotenv from "dotenv";
 import {
   COMMENT_BODY,
   REPO_NAME,
@@ -6,9 +7,13 @@ import {
   SLACK_URL,
 } from "./consts-to-change.js";
 
+dotenv.config(); // Load environment variables from .env
+
 const baseUrl = "https://api.github.com";
 
-const accessToken = "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";
+const accessToken = process.env.AUTOMATION_PAT;
+
+console.log(process.env.AUTOMATION_PAT);
 
 let commentPosted = false;
 
@@ -45,8 +50,6 @@ async function main() {
           const alreadyCommented = comments.some(
             (comment) => comment.body === COMMENT_BODY
           );
-
-          console.log("No issue with the slack URL posted yet.");
 
           if (alreadyCommented) {
             console.log("Comment already posted. Stopping further comments.");
