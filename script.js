@@ -20,17 +20,8 @@ console.log(
   REPO_NAME
 );
 
-let mainIsRunning = false;
-
-// The  main funtion
+// The main function
 async function main() {
-  if (mainIsRunning) {
-    console.log("Previous process is not done yet, skipping this call.");
-    return;
-  }
-
-  mainIsRunning = true;
-
   try {
     console.log("Running main");
 
@@ -53,22 +44,27 @@ async function main() {
           const commentsResponse = await axios.get(commentsUrl, { headers });
           const comments = commentsResponse.data;
 
-          const alreadyCommented = comments.some(
+          // Check if there are duplicate comments with the same body
+          const duplicateComments = comments.filter(
             (comment) => comment.body === COMMENT_BODY
           );
 
-          if (alreadyCommented) {
-            console.log("Comment already posted. Stopping further comments.");
-            clearInterval(intervalId);
-            process.exit(0);
+          if (duplicateComments.length > 1) {
+            // Delete all duplicate comments except one
+            for (let i = 1; i < duplicateComments.length; i++) {
+              const deleteUrl = `${baseUrl}/repos/${REPO_OWNER}/${REPO_NAME}/issues/comments/${duplicateComments[i].id}`;
+              await axios.delete(deleteUrl, { headers });
+              console.log("Deleted duplicate comment.");
+            }
           }
 
-          // Post the comment
-          await axios.post(commentsUrl, { body: COMMENT_BODY }, { headers });
-          console.log("Comment posted successfully.");
-          clearInterval(intervalId);
+          // Post the comment if it doesn't exist
+          if (duplicateComments.length === 0) {
+            await axios.post(commentsUrl, { body: COMMENT_BODY }, { headers });
+            console.log("Comment posted successfully.");
+          }
 
-          process.exit(0);
+          return;
         }
       }
     } else {
@@ -76,10 +72,7 @@ async function main() {
     }
   } catch (error) {
     console.error("Error:", error);
-  } finally {
-    mainIsRunning = false;
   }
 }
 
-// Schedule the script to run every 2 seconds.
-const intervalId = setInterval(main, 2000);
+main();
