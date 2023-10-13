@@ -72,4 +72,7 @@ async function main() {
 
 // Schedule the script to run every second
 const intervalId = setInterval(main, 2000);
-if (commentPosted) clearInterval(intervalId);
+if (commentPosted) {
+  clearInterval(intervalId);
+  process.exit(0);
+}
