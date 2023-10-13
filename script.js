@@ -13,18 +13,26 @@ const baseUrl = "https://api.github.com";
 
 const accessToken = process.env.AUTOMATION_PAT;
 
-let commentPosted = false;
+console.log(
+  "We are currently working on this repo: ",
+  REPO_OWNER,
+  "/",
+  REPO_NAME
+);
 
-console.log(REPO_OWNER, "/", REPO_NAME);
+let mainIsRunning = false;
 
+// The  main funtion
 async function main() {
+  if (mainIsRunning) {
+    console.log("Previous process is not done yet, skipping this call.");
+    return;
+  }
+
+  mainIsRunning = true;
+
   try {
-    console.log("running main");
-    if (commentPosted) {
-      console.log("Comment already posted. Stopping further comments.");
-      process.exit(0);
-      return;
-    }
+    console.log("Running main");
 
     // Fetch issues
     const issuesUrl = `${baseUrl}/repos/${REPO_OWNER}/${REPO_NAME}/issues`;
@@ -51,15 +59,16 @@ async function main() {
 
           if (alreadyCommented) {
             console.log("Comment already posted. Stopping further comments.");
-            process.exit(0);
-          } else {
-            // Post the comment
-            await axios.post(commentsUrl, { body: COMMENT_BODY }, { headers });
-            console.log("Comment posted successfully.");
-            commentPosted = true;
+            clearInterval(intervalId);
             process.exit(0);
           }
-          return;
+
+          // Post the comment
+          await axios.post(commentsUrl, { body: COMMENT_BODY }, { headers });
+          console.log("Comment posted successfully.");
+          clearInterval(intervalId);
+
+          process.exit(0);
         }
       }
     } else {
@@ -67,12 +76,10 @@ async function main() {
     }
   } catch (error) {
     console.error("Error:", error);
+  } finally {
+    mainIsRunning = false;
   }
 }
 
-// Schedule the script to run every second
+// Schedule the script to run every 2 seconds.
 const intervalId = setInterval(main, 2000);
-if (commentPosted) {
-  clearInterval(intervalId);
-  process.exit(0);
-}
