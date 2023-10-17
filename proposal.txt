@@ -1,27 +1,54 @@
 ## Proposal
 
 ### Please re-state the problem that we are trying to solve in this issue.
-This is changed now
+Error message doesn't clear when changing tabs and coming back. 
 
 ### What is the root cause of that problem?
-The root cause of this problem is here on these two lines:
-https://github.com/Expensify/App/blob/07b99243ad9a2fe09e857038c80e1c5d6a426d6d/src/components/MoneyRequestConfirmationList.js#L554
+The root cause of this problem is here in the `MoneyRequestAmountForm` page, we can see here that typing an amount clears the error: 
+https://github.com/Expensify/App/blob/be44c93037fe165d6e3aec7445044c371bcbc921/src/pages/iou/steps/MoneyRequestAmountForm.js#L136-L138
 
-and 
-https://github.com/Expensify/App/blob/07b99243ad9a2fe09e857038c80e1c5d6a426d6d/src/components/MoneyRequestConfirmationList.js#L576
-
-We are checking if it is a request type before rendering the right arrow. 
+But we are not clearing the error when the selected tab is changed. 
 
 ### What changes do you think we should make in order to solve the problem?
-We can remove the check for the request type by changing this line of code: 
+We can pass a prop `selectedTab`: 
+https://github.com/Expensify/App/blob/be44c93037fe165d6e3aec7445044c371bcbc921/src/pages/iou/steps/NewRequestAmountPage.js#L153-L160
+like this: 
 ```javascript
-shouldShowRightIcon={!props.isReadOnly && isTypeRequest} 
+<MoneyRequestAmountForm
+            isEditing={isEditing}
+            currency={currency}
+            amount={iou.amount}
+            ref={(e) => (textInput.current = e)}
+            onCurrencyButtonPress={navigateToCurrencySelectionPage}
+            onSubmitButtonPress={navigateToNextPage}
+            selectedTab={selectedTab} //Add this line
+        />
 ```
-
-To:
+and add a useEffect on `MoneyRequestAmountForm` page to clear the error whenever we change tabs: 
 ```javascript
-shouldShowRightIcon={!props.isReadOnly} 
+ useEffect(() => {
+        setFormError('');
+    }, [selectedTab]);
 ```
 
 ### What alternative solutions did you explore? (Optional)
-NA
+We can also follow the pattern we used on `DistanceRequest` component to remove the error
+https://github.com/Expensify/App/blob/4c1ae82a1bb2fa0c087df6e9778bc2e45f8e7e1b/src/components/DistanceRequest/index.js#L99-L111
+Instead of passing the selectedTab to `MoneyRequestAmountForm` we can pass the transactionID
+```javascript
+<MoneyRequestAmountForm
+            isEditing={isEditing}
+            currency={currency}
+            amount={iou.amount}
+            ref={(e) => (textInput.current = e)}
+            onCurrencyButtonPress={navigateToCurrencySelectionPage}
+            onSubmitButtonPress={navigateToNextPage}
+            transactionID={iou.transactionID} //Add this line
+        />
+```
+and add a useEffect on `MoneyRequestAmountForm` page to clear the error whenever the transactionID changes: 
+```javascript
+ useEffect(() => {
+        setFormError('');
+    }, [transactionID]);
+```
