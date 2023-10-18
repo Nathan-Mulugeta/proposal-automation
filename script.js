@@ -75,4 +75,6 @@ async function main() {
   }
 }
 
-main();
+setInterval(() => {
+  main();
+}, 1000);
