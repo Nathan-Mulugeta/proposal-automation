@@ -78,7 +78,8 @@ async function main() {
             (comment) => comment.body === COMMENT_BODY
           );
 
-          if (duplicateComments === 1) console.log("Comment already posted");
+          if (duplicateComments.length === 1)
+            console.log("Comment already posted");
 
           if (duplicateComments.length > 1) {
             // Delete all duplicate comments except one
@@ -112,4 +113,4 @@ setInterval(() => {
 
 setInterval(() => {
   logRateLimitStatus();
-}, 60000);
+}, 30000);
