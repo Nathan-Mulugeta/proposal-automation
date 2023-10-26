@@ -20,6 +20,35 @@ console.log(
   REPO_NAME
 );
 
+// Function to fetch and log rate limit status
+async function logRateLimitStatus() {
+  try {
+    const rateLimitUrl = `${baseUrl}/rate_limit`;
+    const headers = {
+      Authorization: `token ${accessToken}`,
+    };
+
+    const response = await axios.get(rateLimitUrl, { headers });
+
+    if (response.status === 200) {
+      const rateLimit = response.data;
+      console.log("GitHub API Rate Limit Status:");
+      console.log("Limit:", rateLimit.resources.core.limit);
+      console.log("Remaining:", rateLimit.resources.core.remaining);
+      console.log(
+        "Reset Time:",
+        new Date(rateLimit.resources.core.reset * 1000)
+      );
+    } else {
+      console.log(
+        `Failed to fetch rate limit. Status code: ${response.status}`
+      );
+    }
+  } catch (error) {
+    console.error("Error fetching rate limit:", error);
+  }
+}
+
 // The main function
 async function main() {
   try {
@@ -48,6 +77,8 @@ async function main() {
           const duplicateComments = comments.filter(
             (comment) => comment.body === COMMENT_BODY
           );
+
+          if (duplicateComments === 1) console.log("Comment already posted");
 
           if (duplicateComments.length > 1) {
             // Delete all duplicate comments except one
@@ -78,3 +109,7 @@ async function main() {
 setInterval(() => {
   main();
 }, 1000);
+
+setInterval(() => {
+  logRateLimitStatus();
+}, 60000);

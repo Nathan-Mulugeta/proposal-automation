@@ -1,5 +1,5 @@
 // Constants to change.
-const testing = false;
+const testing = true;
 
 const REPO_OWNER = testing ? "Nathan-Mulugeta" : "Expensify";
 
